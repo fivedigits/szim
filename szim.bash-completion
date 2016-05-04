@@ -1,0 +1,41 @@
+_szim_complete_folders () {
+	prefix="$HOME/.szim/"
+
+	local IFS=$'\n'
+	local items=($(compgen -d $prefix$cur))
+	for item in ${items[@]}; do
+		[[ $item == $prefix.* ]] && continue
+		COMPREPLY+=("${item#$prefix}/")
+	done
+}
+
+_szim()
+{
+	local cur prev commands 
+	COMPREPLY=()
+	cur="${COMP_WORDS[COMP_CWORD]}"
+    	prev="${COMP_WORDS[COMP_CWORD-1]}"
+	commands="annotate append fetch help init insert add move mv remove rm show"
+
+	case "${prev}" in
+		add|append|insert)
+			COMPREPLY=( $(compgen -f ${cur}))
+			return 0
+			;;
+		fetch|help|init|show)
+			COMPREPLY=()
+			return 0
+			;;
+		szim)
+			COMPREPLY=( $(compgen -W "${commands}" -- ${cur}))
+			return 0
+			;;
+		*)
+			_szim_complete_folders
+			return 0
+			;;
+	esac
+		
+}
+
+complete -o nospace -F _szim szim
