@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #SZiM is a UNIX citation manager written in BASH.
-#    Copyright (C) 2016  Moritz Schönherrr
+#    Copyright (C) 2016  Moritz Schönherr
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
