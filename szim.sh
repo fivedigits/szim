@@ -11,17 +11,26 @@ die () {
 	exit 1
 }
 
+check_sneaky_paths() {
+	local path
+	for path in "$@"; do
+		[[ $path =~ /\.\.$ || $path =~ ^\.\./ || $path =~ /\.\./ || $path =~ ^\.\.$ ]] && die "Error: You've attempted to pass a sneaky path to szim. Go home."
+	done
+}
+
 #
 # BEGIN subcommand functions
 #
 
 cmd_annotate() {
+	check_sneaky_paths "$1"
 	local full_path="$PREFIX/$1"
 	vim "$full_path/remark.txt"
 }
 
 cmd_copy_pdf_to_storage() {
 	local path="$2"
+	check_sneaky_paths "$path"
 	local full_path="$PREFIX/$path"
 	local filename=$(echo "$path" | tr "/" "_")
 	local pdffile="$full_path/$filename.pdf"
@@ -32,6 +41,7 @@ cmd_copy_pdf_to_storage() {
 
 cmd_fetch() {
 	local path="$1"
+	check_sneaky_paths "$path"
 	local author="$2"
 	local title="$3"
 	
@@ -78,14 +88,19 @@ cmd_init() {
 
 cmd_insert() {
 	local path="$1"
+	local bibpath="$2"
+	check_sneaky_paths "$path"
+	check_sneaky_paths "$bibpath"
 	local full_path="$PREFIX/$path"
 	local bibfile="$full_path/citation.bib"
 	
 	mkdir -p "$full_path"
-	cat "$2" > $bibfile
+	cat "$bibpath" > $bibfile
 }
 
 cmd_mv_entry() {
+	check_sneaky_paths "$1"
+	check_sneaky_paths "$2"
 	local source_path="$PREFIX/$1"
 	local target_path="$PREFIX/$2"
 
@@ -93,7 +108,9 @@ cmd_mv_entry() {
 }
 
 cmd_rm_entry() {
-	local full_path="$PREFIX/$1"
+	local path="$1"
+	check_sneaky_paths "$path"
+	local full_path="$PREFIX/$path"
 	
 	rm -r $full_path
 }
