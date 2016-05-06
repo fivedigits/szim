@@ -45,14 +45,16 @@ cmd_annotate() {
 }
 
 cmd_copy_pdf_to_storage() {
+	local pdfpath="$1"
 	local path="$2"
+	check_sneaky_paths "$pdfpath"
 	check_sneaky_paths "$path"
 	local full_path="$PREFIX/$path"
 	local filename=$(echo "$path" | tr "/" "_")
 	local pdffile="$full_path/$filename.pdf"
 	
 	mkdir -p "$full_path"
-	cp "$1" "$pdffile"
+	cp "$pdfpath" "$pdffile"
 }
 
 cmd_fetch() {
@@ -185,6 +187,6 @@ case "$COMMAND" in
 	mv) shift;		cmd_mv_entry "$@" ;;
 	rm) shift;		cmd_rm_entry "$@" ;;
 	show) shift;		cmd_show "$@" ;;
-	*)			cmd_show "$@" ;;
+	*)			cmd_usage "$@" ;;
 esac
 exit 0
