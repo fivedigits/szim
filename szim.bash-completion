@@ -22,7 +22,7 @@ _szim()
 			COMPREPLY=( $(compgen -f ${cur}))
 			return 0
 			;;
-		fetch|help|init|show)
+		help|init|show)
 			COMPREPLY=()
 			return 0
 			;;

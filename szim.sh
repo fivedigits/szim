@@ -31,8 +31,9 @@ cmd_copy_pdf_to_storage() {
 }
 
 cmd_fetch() {
-	local author="$1"
-	local title="$2"
+	local path="$1"
+	local author="$2"
+	local title="$3"
 	
 	local query_result="$(wget -q "http://www.ams.org/mrlookup?au=$author&ti=$title&format=bibtex" -O - | tr "\n" "|" | grep -oP '@article \{.*?\}\,\|\}')"
 
@@ -52,23 +53,24 @@ cmd_fetch() {
 	
 	# Now, we are left with one article in query_result. Clean it up
 	query_result=$(echo "$query_result" | tr "|" "\n")
-	echo "Fetched the following entry."
-	echo "$query_result"
+	if [[ $(echo "$query_result" | grep -q '*[^\s]*') ]]
+	then
+		echo "Fetched the following entry."
+		echo "$query_result"
+		# Create tag from path
+		local tag=$(echo "$path" | tr "/" "_" | tr " " "_" | tr '[:upper:]' '[:lower:]')
 
-	# Get user to input path for storing it
-	echo "Enter path for new entry."
-	read path
+		# Insert into query_result
+		query_result=$(echo "$query_result" | sed s/\@article\ *\{\ *[a-zA-Z0-9].*\ *\,/\@article\ \{\ "$tag"\,/)
 
-	# Create tag from path
-	local tag=$(echo "$path" | tr "/" "_" | tr " " "_" | tr '[:upper:]' '[:lower:]')
+		# Save result to disk, probably should check whether override or not
+		mkdir -p "$PREFIX/$path"
+		echo "$query_result" > "$PREFIX/$path/citation.bib"
+	else
+		echo "Could not retrieve .bib information. Try different author or title."
+	fi
 
-	# Insert into query_result
-	query_result=$(echo "$query_result" | sed s/\@article\ *\{\ *[a-zA-Z0-9].*\ *\,/\@article\ \{\ "$tag"\,/)
-
-	# Save result to disk, probably should check whether override or not
-	mkdir -p "$PREFIX/$path"
-	echo "$query_result" > "$PREFIX/$path/citation.bib"
-}
+	}
 
 cmd_init() {
 	mkdir -p -v "$PREFIX"
