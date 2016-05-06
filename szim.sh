@@ -120,7 +120,35 @@ cmd_show() {
 }
 
 cmd_usage() {
-	echo "USAGE: szim"
+	echo
+	cat <<-_EOF
+	Usage:
+           $PROGRAM annotate citation-name
+               Edit the annotation file associated with citation-name, the latter must be a
+               sequence of words, delimited by a slash.
+           $PROGRAM append pdf-file citation-name
+               Copy pdf-file to citation-name, the latter must be a sequence of words, 
+               delimited by a slash.
+           $PROGRAM fetch citation-name author title
+               Fetch bib citation info from mrlookup using author and title for query. Store
+               the result in citation-name, which must be a sequence of words, delimited by
+               slashes.
+           $PROGRAM help
+               Show this usage information.
+           $PROGRAM init
+               Initialize a new szim store.
+           $PROGRAM insert citation-name bibfile
+               Copy bibfile to the szim store, at location citation-name,
+               where citation-name is a sequence of words, delimited by a slash.
+           $PROGRAM mv citation-name new-name
+               Move citation-name to new-name. Both arguments must be sequences of words,
+               delimited by a slash.
+           $PROGRAM rm citation-name
+               Remove citation-name from szim store. All sub-paths will be removed, too.
+               Argument citation-name must be a sequence of words delimited by a slash.
+           $PROGRAM show
+               Show the structure of the szim store.
+	_EOF
 }
 
 #
@@ -137,8 +165,8 @@ case "$COMMAND" in
 	help) shift;		cmd_usage "$@" ;;
 	init) shift;		cmd_init "$@" ;;
 	insert|add) shift;	cmd_insert "$@" ;;
-	move|mv) shift;		cmd_mv_entry "$@" ;;
-	remove|rm) shift;	cmd_rm_entry "$@" ;;
+	mv) shift;		cmd_mv_entry "$@" ;;
+	rm) shift;		cmd_rm_entry "$@" ;;
 	show) shift;		cmd_show "$@" ;;
 	*)			cmd_show "$@" ;;
 esac
