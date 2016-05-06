@@ -42,7 +42,7 @@ cmd_fetch() {
 	if [[ $title_count -gt 1 ]]
 	then
 		echo "Found multiple matches. Please select one:[1-$title_count]"
-		titles=$(echo $query_result | grep -oP 'TITLE = .*?\}' | tr "|" "\n")
+		titles=$(echo $query_result | grep -oP 'TITLE = .*?\}\,' | tr "|" "\n")
 		while read line
 		do
 			echo "$line"
@@ -53,7 +53,7 @@ cmd_fetch() {
 	
 	# Now, we are left with one article in query_result. Clean it up
 	query_result=$(echo "$query_result" | tr "|" "\n")
-	if [[ $(echo "$query_result" | grep -q '*[^\s]*') ]]
+	if [[ $(echo "$query_result" | grep '.*[^\s].*') ]]
 	then
 		echo "Fetched the following entry."
 		echo "$query_result"
