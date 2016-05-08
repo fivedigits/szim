@@ -134,8 +134,49 @@ cmd_rm_entry() {
 }
 
 cmd_show() {
+
+    if [[ $# == 1 ]]
+    then
+        local path="$1"
+	check_sneaky_paths "$path"
+	
+	echo
+	echo "Details of $path"
+	echo
+
+	# If there are annotations, print them
+	if [[ -f "$PREFIX/$path/remark.txt" ]]; then
+		cat "$PREFIX/$path/remark.txt"
+	else
+		echo "There are no annotations."
+	fi
+
+	pdffiles=$(ls -1 "$PREFIX/$path" | grep '.*.pdf')
+
+	echo
+	# If there are pdf files, list them
+	if [[ -z "$pdffiles" ]]; then
+		echo "There are no .pdf files associated with this entry."
+	else
+		echo "The following pdf files are associated with this entry:"
+		echo "$pdffiles"
+	fi
+
+	# If there is a bibfile, cat it
+
+	echo
+	if [[ -f "$PREFIX/$path/citation.bib" ]]; then
+		echo "The following citation information is associated with this entry."
+		cat "$PREFIX/$path/citation.bib"
+	else
+		echo "There is no .bib file associated with this entry."
+	fi
+	
+    else
 	echo "SZiM Store"
 	tree --noreport -dC "$PREFIX" | tail -n +2
+    fi
+	
 }
 
 cmd_usage() {
