@@ -31,10 +31,10 @@ _szim()
 	COMPREPLY=()
 	cur="${COMP_WORDS[COMP_CWORD]}"
     	prev="${COMP_WORDS[COMP_CWORD-1]}"
-	commands="annotate append fetch help init insert add move mv remove rm show"
+	commands="annotate append export fetch help init insert add mv rm show"
 
 	case "${prev}" in
-		add|append|insert)
+		add|append|export|insert)
 			COMPREPLY=( $(compgen -f ${cur}))
 			return 0
 			;;
