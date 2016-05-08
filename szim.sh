@@ -30,6 +30,19 @@ cmd_copy_pdf_to_storage() {
 	cp "$1" "$pdffile"
 }
 
+cmd_export_bib() {
+	local path="$1"
+	check_sneaky_paths "$path"
+
+	echo -n > "$path"	
+
+	for file in $(find "$PREFIX" -name "*.bib")
+	do
+		echo >> "$path"
+		cat "$file" >> "$path"
+	done
+}
+
 cmd_fetch() {
 	local author="$1"
 	local title="$2"
@@ -115,6 +128,7 @@ COMMAND="$1"
 case "$COMMAND" in
 	annotate) shift;	cmd_annotate "$@" ;;
 	append) shift;		cmd_copy_pdf_to_storage "$@" ;;
+	export) shift;		cmd_export_bib "$@" ;;
 	fetch) shift;		cmd_fetch "$@" ;;
 	help) shift;		cmd_usage "$@" ;;
 	init) shift;		cmd_init "$@" ;;
