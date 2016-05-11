@@ -144,8 +144,8 @@ cmd_init() {
 }
 
 cmd_insert() {
-	local path="$1"
-	local bibpath="$2"
+	local bibpath="$1"
+	local path="$2"
 	check_sneaky_paths "$path"
 	check_sneaky_paths "$bibpath"
 	local full_path="$PREFIX/$path"
