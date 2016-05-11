@@ -224,6 +224,25 @@ cmd_usage() {
 	_EOF
 }
 
+cmd_view() {
+
+	local path="$1"
+	check_sneaky_paths "$1"
+
+	# Check wether there is anything to do
+	
+	pdffiles=$(find "$PREFIX/$path" -name '*.pdf')
+
+	if [[ -z $pdffiles ]]; then
+		echo "There are no .pdf files associated with this entry."
+	else
+		for file in $pdffiles 
+		do
+			xdg-open $file
+		done
+	fi
+
+}
 #
 # END subcommand section
 #
@@ -242,6 +261,7 @@ case "$COMMAND" in
 	mv) shift;		cmd_mv_entry "$@" ;;
 	rm) shift;		cmd_rm_entry "$@" ;;
 	show) shift;		cmd_show "$@" ;;
+	view) shift;		cmd_view "$@" ;;
 	*)			cmd_usage "$@" ;;
 esac
 exit 0
