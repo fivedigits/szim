@@ -31,7 +31,7 @@ _szim()
 	COMPREPLY=()
 	cur="${COMP_WORDS[COMP_CWORD]}"
     	prev="${COMP_WORDS[COMP_CWORD-1]}"
-	commands="annotate append export fetch help init insert add mv rm show"
+	commands="annotate append export fetch help init insert add mv rm show view"
 
 	case "${prev}" in
 		add|append|export|insert)
