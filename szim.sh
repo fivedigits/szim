@@ -34,6 +34,22 @@ check_sneaky_paths() {
 	done
 }
 
+check_overwrite() {
+
+	local path="$1"
+	
+	if [[ -e "$path" ]]; then
+		echo "File already exists. Overwrite? [y/N]:"
+		read yesno
+		
+		if [[ "$yesno" == "y" ]]; then
+			echo "Overwriting existing file."
+		else
+			die "User aborted append operation."
+		fi
+	fi
+}
+
 #
 # BEGIN subcommand functions
 #
@@ -54,12 +70,17 @@ cmd_copy_pdf_to_storage() {
 	local pdffile="$full_path/$filename.pdf"
 	
 	mkdir -p "$full_path"
+
+	check_overwrite "$pdffile"
+
 	cp "$pdfpath" "$pdffile"
 }
 
 cmd_export_bib() {
 	local path="$1"
 	check_sneaky_paths "$path"
+
+	check_overwrite "$path"
 
 	echo -n > "$path"	
 
@@ -104,9 +125,14 @@ cmd_fetch() {
 		# Insert into query_result
 		query_result=$(echo "$query_result" | sed s/\@article\ *\{\ *[a-zA-Z0-9].*\ *\,/\@article\ \{\ "$tag"\,/)
 
-		# Save result to disk, probably should check whether override or not
+		# Save result to disk
 		mkdir -p "$PREFIX/$path"
-		echo "$query_result" > "$PREFIX/$path/citation.bib"
+		
+		local bibfile="$PREFIX/$path/citation.bib"
+
+		check_overwrite "$bibfile"
+
+		echo "$query_result" > "$bibfile"
 	else
 		echo "Could not retrieve .bib information. Try different author or title."
 	fi
@@ -126,6 +152,9 @@ cmd_insert() {
 	local bibfile="$full_path/citation.bib"
 	
 	mkdir -p "$full_path"
+
+	check_overwrite "$bibfile"
+
 	cat "$bibpath" > $bibfile
 }
 
@@ -134,6 +163,8 @@ cmd_mv_entry() {
 	check_sneaky_paths "$2"
 	local source_path="$PREFIX/$1"
 	local target_path="$PREFIX/$2"
+
+	check_overwrite "$target_path"
 
 	mv $source_path $target_path
 }
