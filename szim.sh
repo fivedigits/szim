@@ -34,21 +34,34 @@ check_sneaky_paths() {
 	done
 }
 
+normalise_szim_path() {
+
+	local path="$1"
+	check_sneaky_paths "$1"
+
+	path="${path%/}"
+	path="${path#/}"
+
+	echo "$path"
+}
+
 #
 # BEGIN subcommand functions
 #
 
 cmd_annotate() {
-	check_sneaky_paths "$1"
-	local full_path="$PREFIX/$1"
+	local path=$(normalise_szim_path "$1")
+	local full_path="$PREFIX/$path"
 	vim "$full_path/remark.txt"
 }
 
 cmd_copy_pdf_to_storage() {
 	local pdfpath="$1"
 	local path="$2"
+
 	check_sneaky_paths "$pdfpath"
-	check_sneaky_paths "$path"
+	normalise_szim_path "$path"
+
 	local full_path="$PREFIX/$path"
 	local filename=$(echo "$path" | tr "/" "_")
 	local pdffile="$full_path/$filename.pdf"
@@ -71,8 +84,7 @@ cmd_export_bib() {
 }
 
 cmd_fetch() {
-	local path="$1"
-	check_sneaky_paths "$path"
+	local path=$(normalise_szim_path "$1")
 	local author="$2"
 	local title="$3"
 	
@@ -118,9 +130,8 @@ cmd_init() {
 }
 
 cmd_insert() {
-	local path="$1"
+	local path=$(normalise_szim_path "$1")
 	local bibpath="$2"
-	check_sneaky_paths "$path"
 	check_sneaky_paths "$bibpath"
 	local full_path="$PREFIX/$path"
 	local bibfile="$full_path/citation.bib"
@@ -130,17 +141,16 @@ cmd_insert() {
 }
 
 cmd_mv_entry() {
-	check_sneaky_paths "$1"
-	check_sneaky_paths "$2"
-	local source_path="$PREFIX/$1"
-	local target_path="$PREFIX/$2"
+	local path1=$(normalise_szim_path "$1")
+	local path2=$(normalise_szim_path "$2")
+	local source_path="$PREFIX/$path1"
+	local target_path="$PREFIX/$path2"
 
 	mv $source_path $target_path
 }
 
 cmd_rm_entry() {
-	local path="$1"
-	check_sneaky_paths "$path"
+	local path=$(normalise_szim_path "$1")
 	local full_path="$PREFIX/$path"
 	
 	rm -r $full_path
@@ -150,8 +160,7 @@ cmd_show() {
 
     if [[ $# == 1 ]]
     then
-        local path="$1"
-	check_sneaky_paths "$path"
+        local path=$(normalise_szim_path "$1")
 	
 	echo
 	echo "Details of $path"
@@ -226,8 +235,7 @@ cmd_usage() {
 
 cmd_view() {
 
-	local path="$1"
-	check_sneaky_paths "$1"
+	local path=$(normalise_szim_path "$1")
 
 	# Check wether there is anything to do
 	
