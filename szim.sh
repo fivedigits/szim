@@ -50,6 +50,14 @@ check_overwrite() {
 	fi
 }
 
+compute_tag() {
+
+	local normalised_path="$1"
+
+	echo "$normalised_path" | tr "/" "_" | tr " " "_" | tr '[:upper:]' '[:lower:]'
+}
+
+
 normalise_szim_path() {
 
 	local path="$1"
@@ -133,7 +141,7 @@ cmd_fetch() {
 		echo "Fetched the following entry."
 		echo "$query_result"
 		# Create tag from path
-		local tag=$(echo "$path" | tr "/" "_" | tr " " "_" | tr '[:upper:]' '[:lower:]')
+		local tag=$(compute_tag "$path")
 
 		# Insert into query_result
 		query_result=$(echo "$query_result" | sed s/\@article\ *\{\ *[a-zA-Z0-9].*\ *\,/\@article\ \{\ "$tag"\,/)
