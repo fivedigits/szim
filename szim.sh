@@ -195,12 +195,24 @@ cmd_insert() {
 cmd_mv_entry() {
 	local path1=$(normalise_szim_path "$1")
 	local path2=$(normalise_szim_path "$2")
+	local tag1=$(compute_tag "$path1")
+	local tag2=$(compute_tag "$path2")
 	local source_path="$PREFIX/$path1"
 	local target_path="$PREFIX/$path2"
 
 	check_overwrite "$target_path"
 
-	mv $source_path $target_path
+	mv "$source_path" "$target_path"
+
+	if [[ -f "${target_path}/${tag1}.txt" ]]; then
+	mv "${target_path}/${tag1}.txt" "${target_path}/${tag2}.txt"
+	fi
+	if [[ -f "${target_path}/${tag1}.pdf" ]]; then
+	mv "${target_path}/${tag1}.pdf" "${target_path}/${tag2}.pdf"
+	fi
+	if [[ -f "${target_path}/${tag1}.bib" ]]; then
+	mv "${target_path}/${tag1}.bib" "${target_path}/${tag2}.bib"
+	fi
 }
 
 cmd_rm_entry() {
