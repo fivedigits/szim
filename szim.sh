@@ -205,15 +205,23 @@ cmd_mv_entry() {
 	mv "$source_path" "$target_path"
 
 	if [[ -f "${target_path}/${tag1}.txt" ]]; then
-	mv "${target_path}/${tag1}.txt" "${target_path}/${tag2}.txt"
+		mv "${target_path}/${tag1}.txt" "${target_path}/${tag2}.txt"
 	fi
+
 	if [[ -f "${target_path}/${tag1}.pdf" ]]; then
-	mv "${target_path}/${tag1}.pdf" "${target_path}/${tag2}.pdf"
+		mv "${target_path}/${tag1}.pdf" "${target_path}/${tag2}.pdf"
 	fi
+	
 	if [[ -f "${target_path}/${tag1}.bib" ]]; then
-	mv "${target_path}/${tag1}.bib" "${target_path}/${tag2}.bib"
+		local bibinfo=$(cat "${target_path}/${tag1}.bib")
+		# first remove old file, for the case when user just changes case
+		# of single letters in path. Otherwise .bib file would be deleted.
+		rm "${target_path}/${tag1}.bib"
+		insert_tag "$tag2" "$bibinfo" > "${target_path}/${tag2}.bib"
 	fi
 }
+
+
 
 cmd_rm_entry() {
 	local path=$(normalise_szim_path "$1")
