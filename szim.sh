@@ -86,19 +86,22 @@ normalise_szim_path() {
 cmd_annotate() {
 	local path=$(normalise_szim_path "$1")
 	local full_path="$PREFIX/$path"
-	$EDITOR "$full_path/remark.txt"
+	local tag=$(compute_tag "$path")
+	
+	mkdir -p "$full_path"
+
+	"$EDITOR" "${full_path}/${tag}.txt"
 }
 
 cmd_copy_pdf_to_storage() {
 	local pdfpath="$1"
-	local path="$2"
+	local path=$(normalise_szim_path "$2")
 
 	check_sneaky_paths "$pdfpath"
-	normalise_szim_path "$path"
 
-	local full_path="$PREFIX/$path"
-	local filename=$(echo "$path" | tr "/" "_")
-	local pdffile="$full_path/$filename.pdf"
+	local full_path="${PREFIX}/${path}"
+	local tag=$(compute_tag "$path")
+	local pdffile="${full_path}/${tag}.pdf"
 	
 	mkdir -p "$full_path"
 
@@ -158,7 +161,7 @@ cmd_fetch() {
 		# Save result to disk
 		mkdir -p "$PREFIX/$path"
 		
-		local bibfile="$PREFIX/$path/citation.bib"
+		local bibfile="$PREFIX/$path/${tag}.bib"
 
 		check_overwrite "$bibfile"
 
@@ -179,7 +182,7 @@ cmd_insert() {
 	local tag=$(compute_tag "$path")
 	check_sneaky_paths "$bibpath"
 	local full_path="$PREFIX/$path"
-	local bibfile="$full_path/citation.bib"
+	local bibfile="$full_path/${tag}.bib"
 	
 	mkdir -p "$full_path"
 
@@ -212,14 +215,14 @@ cmd_show() {
     if [[ $# == 1 ]]
     then
         local path=$(normalise_szim_path "$1")
-	
+	local tag=$(compute_tag "$path")	
 	echo
 	echo "Details of $path"
 	echo
 
 	# If there are annotations, print them
-	if [[ -f "$PREFIX/$path/remark.txt" ]]; then
-		cat "$PREFIX/$path/remark.txt"
+	if [[ -f "$PREFIX/$path/${tag}.txt" ]]; then
+		cat "$PREFIX/$path/${tag}.txt"
 	else
 		echo "There are no annotations."
 	fi
@@ -238,9 +241,9 @@ cmd_show() {
 	# If there is a bibfile, cat it
 
 	echo
-	if [[ -f "$PREFIX/$path/citation.bib" ]]; then
+	if [[ -f "$PREFIX/$path/${tag}.bib" ]]; then
 		echo "The following citation information is associated with this entry."
-		cat "$PREFIX/$path/citation.bib"
+		cat "$PREFIX/$path/${tag}.bib"
 	else
 		echo "There is no .bib file associated with this entry."
 	fi
