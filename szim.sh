@@ -57,6 +57,15 @@ compute_tag() {
 	echo "$normalised_path" | tr "/" "_" | tr " " "_" | tr '[:upper:]' '[:lower:]'
 }
 
+insert_tag() {
+
+	#inserts text into string, which is assumed to contain one @article reference
+	local tag="$1"
+	local bibinfo="$2"
+
+	echo "$bibinfo" | sed s/@article\ *{\ *[a-zA-Z0-9].*\ *,/@article\ {\ "$tag",/ | tr "|" "\n"
+
+}
 
 normalise_szim_path() {
 
@@ -144,7 +153,7 @@ cmd_fetch() {
 		local tag=$(compute_tag "$path")
 
 		# Insert into query_result
-		query_result=$(echo "$query_result" | sed s/\@article\ *\{\ *[a-zA-Z0-9].*\ *\,/\@article\ \{\ "$tag"\,/)
+		query_result=$(insert_tag "$query_result" "$tag")
 
 		# Save result to disk
 		mkdir -p "$PREFIX/$path"
@@ -165,8 +174,9 @@ cmd_init() {
 }
 
 cmd_insert() {
-	local path=$(normalise_szim_path "$1")
-	local bibpath="$2"
+	local bibpath="$1"
+	local path=$(normalise_szim_path "$2")
+	local tag=$(compute_tag "$path")
 	check_sneaky_paths "$bibpath"
 	local full_path="$PREFIX/$path"
 	local bibfile="$full_path/citation.bib"
@@ -175,7 +185,8 @@ cmd_insert() {
 
 	check_overwrite "$bibfile"
 
-	cat "$bibpath" > $bibfile
+	local bibinfo=$(cat "$bibpath")
+	insert_tag "$tag" "$bibinfo" > "$bibfile"
 }
 
 cmd_mv_entry() {
