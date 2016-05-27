@@ -86,7 +86,7 @@ normalise_szim_path() {
 cmd_annotate() {
 	local path=$(normalise_szim_path "$1")
 	local full_path="$PREFIX/$path"
-	vim "$full_path/remark.txt"
+	$EDITOR "$full_path/remark.txt"
 }
 
 cmd_copy_pdf_to_storage() {
